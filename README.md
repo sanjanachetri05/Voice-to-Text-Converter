@@ -1,19 +1,28 @@
-A sleek, browser-based voice-to-text converter designed for fast, hands-free transcription. This tool leverages the Web Speech API to transform spoken words into digital text instantly, featuring a modern UI and essential productivity tools.
+Voice Pro is a high-performance web utility that converts live audio into digital text. Designed with a focus on UX/UI simplicity, it leverages native browser capabilities to provide a seamless transcription experience without the need for external heavy libraries.
 
-🚀 Features
-Live Transcription: Real-time processing with interim results for a seamless experience.
+✨ Key Features
+Real-time Processing: Uses the Web Speech API for instant, low-latency transcription.
 
-Smart Controls: Start, stop, and clear functionality with visual status indicators.
+One-Tap Export: Integrated Clipboard API for instant copying and Blob-based file generation for .txt downloads.
 
-One-Click Copy: Instant clipboard integration for easy sharing.
+Interactive UI: Modern interface built with Tailwind CSS featuring a "Live" status ping indicator.
 
-File Export: Download your transcriptions directly as .txt files.
+Editable Output: A content-editable display area allowing users to refine text manually after speaking.
 
-Responsive UI: Built with Tailwind CSS for a professional look on any device.
+🛠️ Technical Breakdown
+Language: JavaScript (ES6+), HTML5
 
-🛠️ Tech Stack
-Frontend: HTML5, Tailwind CSS
+Styling: Tailwind CSS (Utility-first CSS)
 
-Logic: Vanilla JavaScript (ES6+)
+API: window.SpeechRecognition
 
-API: Web Speech API (SpeechRecognition)
+Icons: FontAwesome 6.0
+
+🚀 Quick Start
+Clone the repository.
+
+Open index.html via a local server (e.g., VS Code Live Server).
+
+Grant microphone permissions when prompted.
+
+Click Start and begin speaking!
