@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sanjana's Voice Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-4 font-sans">
+
+    <div class="w-full max-w-lg bg-white rounded-3xl shadow-xl border border-slate-200 p-8">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold text-indigo-600 flex items-center gap-2">
+                <i class="fa-solid fa-microphone-lines"></i> Voice to Text
+            </h1>
+            <span id="status-dot" class="h-3 w-3 bg-slate-300 rounded-full"></span>
+        </div>
+
+        <div id="output" 
+             contenteditable="true" 
+             class="w-full min-h-[250px] p-5 bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl text-slate-700 text-lg leading-relaxed focus:outline-none focus:border-indigo-400 transition-all mb-6">
+            Your text will appear here...
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 mb-4">
+            <button onclick="startRecognition()" class="bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-semibold transition flex items-center justify-center gap-2 shadow-lg shadow-indigo-100">
+                <i class="fa-solid fa-play"></i> Start
+            </button>
+            <button onclick="stopRecognition()" class="bg-rose-500 hover:bg-rose-600 text-white py-3 rounded-xl font-semibold transition flex items-center justify-center gap-2 shadow-lg shadow-rose-100">
+                <i class="fa-solid fa-stop"></i> Stop
+            </button>
+        </div>
+
+        <div class="flex gap-2">
+            <button onclick="copyText()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 py-2 rounded-lg text-sm font-medium transition">
+                <i class="fa-solid fa-copy mr-1"></i> Copy
+            </button>
+            <button onclick="downloadText()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 py-2 rounded-lg text-sm font-medium transition">
+                <i class="fa-solid fa-download mr-1"></i> Download
+            </button>
+            <button onclick="clearText()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-rose-500 py-2 rounded-lg text-sm font-medium transition">
+                <i class="fa-solid fa-trash-can mr-1"></i> Clear
+            </button>
+        </div>
+
+        <p id="status-text" class="text-center mt-6 text-xs text-slate-400 uppercase tracking-widest font-bold">Status: Ready</p>
+    </div>
+
+    <script>
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+        
+        const output = document.getElementById('output');
+        const statusText = document.getElementById('status-text');
+        const statusDot = document.getElementById('status-dot');
+
+        let finalTranscript = '';
+
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = 'en-US';
+
+        function startRecognition() {
+            try {
+                recognition.start();
+                statusText.innerText = "Status: Listening...";
+                statusDot.classList.replace('bg-slate-300', 'bg-emerald-500');
+                statusDot.classList.add('animate-ping');
+            } catch (e) {
+                console.log("Recognition already started");
+            }
+        }
+
+        function stopRecognition() {
+            recognition.stop();
+            statusText.innerText = "Status: Stopped";
+            statusDot.classList.replace('bg-emerald-500', 'bg-slate-300');
+            statusDot.classList.remove('animate-ping');
+        }
+
+        recognition.onresult = (event) => {
+            let interimTranscript = '';
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                const result = event.results[i];
+                const text = result[0].transcript;
+                if (result.isFinal) {
+                    finalTranscript += text;
+                } else {
+                    interimTranscript += text;
+                }
+            }
+            output.innerText = finalTranscript + interimTranscript;
+        };
+
+        // If the recognition service stops (often happens after a pause),
+        // keep it running while the UI indicates we're still Listening.
+        recognition.onend = () => {
+            if (statusText.innerText === "Status: Listening...") {
+                try { recognition.start(); } catch (e) { /* already restarting */ }
+            }
+        };
+
+        // NEW: Copy to Clipboard
+        function copyText() {
+            const text = output.innerText;
+            navigator.clipboard.writeText(text);
+            alert("Text copied to clipboard!");
+        }
+
+        // NEW: Download as .txt file
+        function downloadText() {
+            const text = output.innerText;
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'transcription.txt';
+            a.click();
+        }
+
+        function clearText() {
+            output.innerText = "";
+            finalTranscript = '';
+        }
+    </script>
+</body>
+</html>
